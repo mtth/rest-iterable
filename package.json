@@ -1,0 +1,29 @@
+{
+  "name": "rest-iterable",
+  "version": "0.0.1",
+  "description": "Bidirectional REST iterable.",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rm -rf node_modules",
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:mtth/rest-iterable.git"
+  },
+  "keywords": [
+    "rest",
+    "iterable",
+    "lazy"
+  ],
+  "author": "Matthieu Monsch",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mtth/rest-iterable/issues"
+  },
+  "homepage": "https://github.com/mtth/rest-iterable",
+  "devDependencies": {
+    "express": "^4.12.0",
+    "mocha": "^2.1.0"
+  }
+}
