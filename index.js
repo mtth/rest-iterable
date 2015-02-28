@@ -13,7 +13,7 @@
    * @param `opts` Options to configure laziness and batch size.
    *
    */
-  function RestIterable(opts) {
+  function Sieste(opts) {
 
     opts = opts || {};
     var _lowWaterMark = opts.lowWaterMark || 2;
@@ -209,6 +209,6 @@
 
   }
 
-  root.exports = RestIterable;
+  root.exports = Sieste;
 
 })(module || this);

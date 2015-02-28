@@ -7,11 +7,11 @@
       assert = require('assert'),
       http = require('http'),
       url = require('url'),
-      RestIterable = require('./');
+      Sieste = require('./');
 
   var port = 3456;
 
-  describe('RestIterable', function () {
+  describe('Sieste', function () {
 
     var server;
 
@@ -65,7 +65,7 @@
     // Basic implementation.
     function Iterable() {
 
-      RestIterable.call(this);
+      Sieste.call(this);
 
       this._fetch = function (limit, offset, params, cb) {
 

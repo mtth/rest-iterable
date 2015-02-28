@@ -1,4 +1,6 @@
-REST Iterable
-=============
+Sieste.js
+=========
 
-Transform a REST endpoint into a nice JavaScript iterable.
+REST, lazily.
+
+Transform any standard API collection endpoint into a lazy iterable.
