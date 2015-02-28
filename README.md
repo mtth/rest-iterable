@@ -1,16 +1,8 @@
 Sieste
 ======
 
-REST, lazily: transform any `(limit, offset)` resource interface into a
-asynchronous iterable with `next` and `prev` methods.
-
-
-Features
---------
-
-+ Support for any underlying resource implementation by writing a single
-  `_fetch` method.
-+ Configurable pre-fetch mechanism using two simple watermark options.
+REST, lazily: transform any `(limit, offset)` resource interface into an
+asynchronous iterable.
 
 
 Installation
@@ -32,7 +24,7 @@ API
   direction).
 
 Instantiate a new iterable. Note that this class shouldn't be instantiated
-directly but first subclassed to override the `fetch` method (see below).
+directly but first sub-classed to override the `_fetch` method (see below).
 
 #### sieste.reset(params, [index], cb)
 
@@ -59,7 +51,9 @@ Retrieve previous element. Will be `null` if end of iterable.
 + `params` {Object} Passed from `reset`.
 + `cb(err, item)` {Function}
 
-The function to be implemented.
+The function to be implemented. `Sieste` doesn't make any assumptions on how
+your underlying resource is served and will simply take care of calling this
+method appropriately (handling pre-fetching and caching for you).
 
 
 Examples
@@ -72,9 +66,9 @@ Sample implementations for a standard REST resource.
 ```javascript
 // Assuming $ and Sieste available on the global object.
 
-function AjaxIterable() {
+function AjaxIterable(opts) {
 
-  Sieste.call(this);
+  Sieste.call(this, opts);
 
   this._fetch = function (limit, offset, params, cb) {
 
@@ -97,15 +91,15 @@ var http = require('http'),
     url = require('url'),
     Sieste = require('sieste');
 
-function NodeIterable() {
+function NodeIterable(opts) {
 
-  Sieste.call(this);
+  Sieste.call(this, opts);
 
   this._fetch = function (limit, offset, params, cb) {
 
     var formattedUrl = url.format({
       protocol: 'http',
-      hostname: 'params.hostname,
+      hostname: params.hostname,
       port: params.port,
       pathname: params.pathname,
       query: {limit: limit, offset: offset}

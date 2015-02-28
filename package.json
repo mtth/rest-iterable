@@ -1,7 +1,7 @@
 {
   "name": "sieste",
-  "version": "0.0.2",
-  "description": "Lazy bidirectional REST iterable.",
+  "version": "0.0.3",
+  "description": "Lazy REST iterable.",
   "main": "index.js",
   "scripts": {
     "clean": "rm -rf node_modules",
@@ -14,7 +14,8 @@
   "keywords": [
     "rest",
     "iterable",
-    "lazy"
+    "lazy",
+    "prefetch"
   ],
   "author": "Matthieu Monsch",
   "license": "MIT",
