@@ -1,6 +1,6 @@
 {
   "name": "sieste",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "Lazy REST iterable.",
   "main": "index.js",
   "scripts": {

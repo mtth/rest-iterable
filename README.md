@@ -21,8 +21,8 @@ API
 Returns a new iterable for the given fetching function `fn`.
 
 + `opts` {Object} Pre-fetching configuration. Two keys are available:
-  `lowWaterMark` (number of cached elems when to send a pre-fetch request) and
-  `highWaterMark` (maximum number of elems cached at one time in one
+  `lowWaterMark` (number of cached elements when to send a pre-fetch request)
+  and `highWaterMark` (maximum number of elements cached at one time in one
   direction).
 + `fn(limit, offset, params, cb)` {Function} Function used to load the
   iterable. This function takes the following arguments:
@@ -30,9 +30,9 @@ Returns a new iterable for the given fetching function `fn`.
   + `limit` {Number}
   + `offset` {Number}
   + `params` {Object} Passed from `reset`.
-  + `cb(err, elems)` {Function} If the list of elems returned is shorter than
-    the total amount of elems asked for, the resource will be considered
-    exhausted.
+  + `cb(err, elems)` {Function} If the list of elements returned is shorter
+    than the total amount of elements asked for, the resource will be
+    considered exhausted.
 
 Note that `sieste` doesn't make any assumptions on how your underlying resource
 is served and will simply take care of calling this method appropriately
@@ -41,10 +41,11 @@ is served and will simply take care of calling this method appropriately
 #### iter.reset(params, [index], cb)
 
 + `params` {Object} Passed to `fn`.
-+ `index` {Number} Optional start index.
++ `index` {Number} Optional start index. [default: `0`]
 + `cb(err, elem)` {Function}
 
-Reset the iterable, changing the underlying resource.
+Reset the iterable, changing the underlying resource. Also calls its callback
+with the element at `index`.
 
 #### iter.next(cb)
 
@@ -56,7 +57,7 @@ Retrieve next element. Will be `null` if end of iterable.
 
 + `cb(err, elem)` {Function}
 
-Retrieve previous element. Will be `null` if end of iterable.
+Retrieve previous element. Will be `null` if beginning of iterable.
 
 
 Quickstart
@@ -116,7 +117,7 @@ var iter = sieste(function (limit, offset, params, cb) {
 });
 ```
 
-These iterables can then be used in the same way:
+These iterables can then be used in the same way, for example:
 
 ```javascript
 // Assuming params points to the resource's URL.
