@@ -154,25 +154,6 @@
 
     };
 
-    /**
-     * Function to be overridden.
-     *
-     * This function will be called internally by the iterator. It is
-     * guaranteed to be called at most once per direction at one time.
-     *
-     * @param `limit` Total of elements to fetch.
-     * @param `offset` Start offset.
-     * @param `params` Parameters passed to `reset`.
-     * @param `cb(err, data)` Function to be called with the retrieved data,
-     * (`data` should be an array), or an eventual error.
-     *
-     */
-    this._fetch = function (limit, offset, params, cb) {
-
-      cb(new Error('Not implemented.'));
-
-    };
-
     // Helper.
 
     function fetch(start, end) { // Start inclusive, end exclusive.
@@ -209,6 +190,50 @@
 
   }
 
-  root.exports = Sieste;
+  /**
+    * Function to be overridden.
+    *
+    * This function will be called internally by the iterator. It is
+    * guaranteed to be called at most once per direction at one time.
+    *
+    * @param `limit` Total of elements to fetch.
+    * @param `offset` Start offset.
+    * @param `params` Parameters passed to `reset`.
+    * @param `cb(err, data)` Function to be called with the retrieved data,
+    * (`data` should be an array), or an eventual error.
+    *
+    */
+  Sieste.prototype._fetch = function (limit, offset, params, cb) {
+
+    cb(new Error('Not implemented.'));
+
+  };
+
+  /**
+   * Export function.
+   *
+   * Convenience method to create a particularized sieste instance.
+   *
+   * @param `opts` Passed to `Sieste` constructor.
+   * @param `fn(limit, offset, params, cb)` `_fetch` function.
+   *
+   */
+  function sieste(opts, fn) {
+
+    if (!fn && typeof opts == 'function') {
+      fn = opts;
+      opts = null;
+    }
+
+    var iter = new Sieste(opts);
+    iter._fetch = fn;
+    return iter;
+
+  }
+
+  // For fancy things.
+  sieste.Sieste = Sieste;
+
+  root.exports = sieste;
 
 })(module || this);

@@ -7,12 +7,12 @@
       assert = require('assert'),
       http = require('http'),
       url = require('url'),
-      Sieste = require('./');
-
-  var port = 3456;
+      sieste = require('./');
 
   describe('Sieste', function () {
 
+    var Sieste = sieste.Sieste;
+    var port = 3456;
     var server;
 
     before(function (done) {
@@ -95,18 +95,41 @@
 
     }
 
+    function setupEndpoint(cb) {
+
+      var app = express();
+      app.get('/', function (req, res) {
+        res.json([1,2,3]);
+      });
+      return app.listen(port, cb);
+
+    }
+
   });
 
-  // Helpers.
+  describe('sieste', function () {
 
-  function setupEndpoint(cb) {
+    it('Creates a correct iterable', function (done) {
 
-    var app = express();
-    app.get('/', function (req, res) {
-      res.json([1,2,3]);
+      var iter = sieste(function (limit, offset, params, cb) {
+        var elems = [];
+        var i;
+        for (i = 0; i < limit; i++) {
+          elems.push(offset + i);
+        }
+        cb(null, elems);
+      });
+
+      iter.reset({}, 5, function (err, elem) {
+        assert.equal(elem, 5);
+        iter.prev(function (err, elem) {
+          assert.equal(elem, 4);
+          done();
+        });
+      });
+
     });
-    return app.listen(port, cb);
 
-  }
+  });
 
 })();

@@ -16,48 +16,51 @@ $ npm install sieste
 API
 ---
 
-### new Sieste([opts])
+### var iter = sieste([opts], fn)
+
+Returns a new iterable for the given fetching function `fn`.
 
 + `opts` {Object} Pre-fetching configuration. Two keys are available:
-  `lowWaterMark` (number of cached items when to send a pre-fetch request) and
-  `highWaterMark` (maximum number of items cached at one time in one
+  `lowWaterMark` (number of cached elems when to send a pre-fetch request) and
+  `highWaterMark` (maximum number of elems cached at one time in one
   direction).
++ `fn(limit, offset, params, cb)` {Function} Function used to load the
+  iterable. This function takes the following arguments:
 
-Instantiate a new iterable. Note that this class shouldn't be instantiated
-directly but first sub-classed to override the `_fetch` method (see below).
+  + `limit` {Number}
+  + `offset` {Number}
+  + `params` {Object} Passed from `reset`.
+  + `cb(err, elems)` {Function} If the list of elems returned is shorter than
+    the total amount of elems asked for, the resource will be considered
+    exhausted.
 
-#### sieste.reset(params, [index], cb)
+Note that `sieste` doesn't make any assumptions on how your underlying resource
+is served and will simply take care of calling this method appropriately
+(handling pre-fetching and caching for you).
 
-+ `params` {Object} Passed to `_fetch`.
+#### iter.reset(params, [index], cb)
+
++ `params` {Object} Passed to `fn`.
 + `index` {Number} Optional start index.
-+ `cb(err, item)` {Function}
++ `cb(err, elem)` {Function}
 
-#### sieste.next(cb)
+Reset the iterable, changing the underlying resource.
 
-+ `cb(err, item)` {Function}
+#### iter.next(cb)
+
++ `cb(err, elem)` {Function}
 
 Retrieve next element. Will be `null` if end of iterable.
 
-#### sieste.prev(cb)
+#### iter.prev(cb)
 
-+ `cb(err, item)` {Function}
++ `cb(err, elem)` {Function}
 
 Retrieve previous element. Will be `null` if end of iterable.
 
-#### sieste.\_fetch(limit, offset, params, cb)
 
-+ `limit` {Number}
-+ `offset` {Number}
-+ `params` {Object} Passed from `reset`.
-+ `cb(err, item)` {Function}
-
-The function to be implemented. `Sieste` doesn't make any assumptions on how
-your underlying resource is served and will simply take care of calling this
-method appropriately (handling pre-fetching and caching for you).
-
-
-Examples
---------
+Quickstart
+----------
 
 Sample implementations for a standard REST resource.
 
@@ -66,22 +69,16 @@ Sample implementations for a standard REST resource.
 ```javascript
 // Assuming $ and Sieste available on the global object.
 
-function AjaxIterable(opts) {
+var iter = sieste(function (limit, offset, params, cb) {
 
-  Sieste.call(this, opts);
+  $.ajax({
+    url: params.protocol + '//' + params.hostname + '/' + params.pathname,
+    data: {limit: limit, offset: offset},
+    type: 'GET'
+  }).done(function (data) { cb(null, data); })
+    .fail(function (xhr) { cb(xhr); });
 
-  this._fetch = function (limit, offset, params, cb) {
-
-    $.ajax({
-      url: params.protocol + '//' + params.hostname + '/' + params.pathname,
-      data: {limit: limit, offset: offset},
-      type: 'GET'
-    }).done(function (data) { cb(null, data); })
-    }).fail(function (xhr) { cb(xhr); });
-
-  };
-
-}
+});
 ```
 
 ### node.js
@@ -89,38 +86,44 @@ function AjaxIterable(opts) {
 ```javascript
 var http = require('http'),
     url = require('url'),
-    Sieste = require('sieste');
+    sieste = require('sieste');
 
-function NodeIterable(opts) {
+var iter = sieste(function (limit, offset, params, cb) {
 
-  Sieste.call(this, opts);
+  var formattedUrl = url.format({
+    protocol: 'http',
+    hostname: params.hostname,
+    port: params.port,
+    pathname: params.pathname,
+    query: {limit: limit, offset: offset}
+  });
+  http.get(formattedUrl, function (res) {
+    var data = '';
+    var obj;
+    res
+      .on('data', function (chunk) { data += chunk; })
+      .on('end', function () {
+        try {
+          obj = JSON.parse(data);
+        } catch (err) {
+          cb(err);
+          return;
+        }
+        cb(null, obj);
+      });
+  });
 
-  this._fetch = function (limit, offset, params, cb) {
+});
+```
 
-    var formattedUrl = url.format({
-      protocol: 'http',
-      hostname: params.hostname,
-      port: params.port,
-      pathname: params.pathname,
-      query: {limit: limit, offset: offset}
-    });
-    http.get(formattedUrl, function (res) {
-      var data = '';
-      var obj;
-      res
-        .on('data', function (chunk) { data += chunk; })
-        .on('end', function () {
-          try {
-            obj = JSON.parse(data);
-          } catch (err) {
-            cb(err);
-            return;
-          }
-          cb(null, obj);
-        });
-    });
+These iterables can then be used in the same way:
 
-  };
+```javascript
+// Assuming params points to the resource's URL.
 
-}
+iter.reset(params, function (err, elem) {
+
+  console.log('Got elem ' + elem + '!');
+
+});
 ```
