@@ -57,7 +57,7 @@
         if (_index < _data.length) {
           cb(null, _data[_index]);
         } else {
-          cb(null, null);
+          cb(new Error('Index out of bounds.'), null);
         }
       };
       fetch(_offset, _offset + _highWaterMark);

@@ -130,6 +130,25 @@
 
     });
 
+    it('Fails when resetting on an out of bounds index', function (done) {
+
+      var iter = sieste(function (limit, offset, params, cb) {
+        var elems = [];
+        var i;
+        for (i = offset; i < offset + limit && i < 5; i++) {
+          elems.push(i);
+        }
+        cb(null, elems);
+      });
+
+      iter.reset({}, 5, function (err, elem) {
+        assert.ok(err !== null);
+        assert.ok(elem === null);
+        done();
+      });
+
+    });
+
   });
 
 })();

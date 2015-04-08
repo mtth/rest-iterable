@@ -21,15 +21,18 @@ API
 Returns a new iterable for the given fetching function `fn`.
 
 + `opts` {Object} Pre-fetching configuration. Two keys are available:
-  `lowWaterMark` (number of cached elements when to send a pre-fetch request)
-  and `highWaterMark` (maximum number of elements cached at one time in one
-  direction).
+
+  + `lowWaterMark` (number of cached elements when to send a pre-fetch
+    request). [default: `2`]
+  + `highWaterMark` (maximum number of elements cached at one time in one
+    direction). [default: `5`]
+
 + `fn(limit, offset, params, cb)` {Function} Function used to load the
   iterable. This function takes the following arguments:
 
-  + `limit` {Number}
-  + `offset` {Number}
-  + `params` {Object} Passed from `reset`.
+  + `limit` {Number} Number of elements to fetch.
+  + `offset` {Number} Starting offset of first element to fetch.
+  + `params` {Object} Passed through from `reset`.
   + `cb(err, elems)` {Function} If the list of elements returned is shorter
     than the total amount of elements asked for, the resource will be
     considered exhausted.
@@ -40,24 +43,31 @@ is served and will simply take care of calling this method appropriately
 
 #### iter.reset(params, [index], cb)
 
-+ `params` {Object} Passed to `fn`.
-+ `index` {Number} Optional start index. [default: `0`]
-+ `cb(err, elem)` {Function}
+Reset the iterable, changing the underlying resource.
 
-Reset the iterable, changing the underlying resource. Also calls its callback
-with the element at `index`.
++ `params` {Object} Parameters used to set the resource used (this will be
+  passed to each call to `fn`).
++ `index` {Number} Optional start index. Note that an error will occur if this
+  index is set to a value greater than the total amount of elements in the
+  resource. [default: `0`]
++ `cb(err, elem)` {Function} Callback to which the element at `index` will be
+  passed.
 
 #### iter.next(cb)
 
-+ `cb(err, elem)` {Function}
+Retrieve next element.
 
-Retrieve next element. Will be `null` if end of iterable.
++ `cb(err, elem)` {Function} Callback to which the next element will be
+  passed (`null` if end of iterable).
+
 
 #### iter.prev(cb)
 
-+ `cb(err, elem)` {Function}
+Retrieve previous element.
 
-Retrieve previous element. Will be `null` if beginning of iterable.
++ `cb(err, elem)` {Function} Callback to which the previous element will be
+  passed (`null` if beginning of iterable).
+
 
 
 Quickstart
